@@ -96,24 +96,16 @@ class CharacterTextSplitter:
 
 class VectorDatabaseWithMetadata:
     def __init__(self, embedding_model: EmbeddingModel = None, embedding_model_name: str = None, dimensions: int = None):
-        """
-        Initialise une base de données vectorielle avec métadonnées.
+        self.vectors = {}  # Dictionary with ID -> vector
+        self.documents = {}  # Dictionary with ID -> text content
+        self.metadata = {}  # Dictionary with ID -> metadata
         
-        Arguments:
-            embedding_model: Un modèle d'embedding préconfiguré, ou None pour en créer un nouveau
-            embedding_model_name: Nom du modèle d'embedding à utiliser (si embedding_model=None)
-            dimensions: Nombre de dimensions pour les embeddings (si embedding_model=None)
-        """
-        self.vectors = {}  # Dictionnaire avec ID -> vecteur
-        self.documents = {}  # Dictionnaire avec ID -> contenu du texte
-        self.metadata = {}  # Dictionnaire avec ID -> métadonnées
-        
-        # Initialisation élégante du modèle d'embedding
+        # Elegant initialization of the embedding model
         if embedding_model is not None:
-            # Utiliser le modèle d'embedding fourni
+            # Use the provided embedding model
             self.embedding_model = embedding_model
         else:
-            # Créer un nouveau modèle d'embedding avec les paramètres spécifiés
+            # Create a new embedding model with the specified parameters
             kwargs = {}
             if embedding_model_name is not None:
                 kwargs["embeddings_model_name"] = embedding_model_name
@@ -178,7 +170,7 @@ class PDFLoader:
         with open(self.path, "rb") as f:
             pdf_reader = PyPDF2.PdfReader(f)
             
-            # Extraire les métadonnées globales du document
+            # Extract global document metadata
             doc_metadata = pdf_reader.metadata
             self.metadata = {
                 "title": doc_metadata.get("/Title", ""),
@@ -193,13 +185,13 @@ class PDFLoader:
                 "filename": os.path.basename(self.path)
             }
             
-            # Extraire le texte et les métadonnées de chaque page
+            # Extract text and metadata for each page
             for page_num in range(len(pdf_reader.pages)):
                 page = pdf_reader.pages[page_num]
                 text = page.extract_text()
                 
                 page_metadata = {
-                    **self.metadata,  # Inclure les métadonnées globales
+                    **self.metadata,  # Include global metadata
                     "page_number": page_num + 1,
                     "page_size": {"width": page.mediabox.width, "height": page.mediabox.height},
                 }
@@ -256,12 +248,10 @@ class MetadataCharacterTextSplitter:
 
 
 if __name__ == "__main__":
-    # Test avec un fichier texte
+    # Test with a text file
     loader = DocumentLoader("data/KingLear.txt")
     loader.load()
     splitter = CharacterTextSplitter()
     chunks = splitter.split_texts(loader.documents)
     print(f"Nombre de chunks dans le fichier texte : {len(chunks)}")
     print(chunks[0][:100])
-
-    # Essayez avec un fichier PDF si disponi
