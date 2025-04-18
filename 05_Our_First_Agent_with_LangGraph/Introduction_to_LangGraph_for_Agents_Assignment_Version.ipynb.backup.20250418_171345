@@ -2225,7 +2225,6 @@
       "version": "3.13.2"
     },
     "widgets": {
-      "state": {},
       "application/vnd.jupyter.widget-state+json": {
         "041e22a9b5514e36bd4d1dac01d5d398": {
           "model_module": "@jupyter-widgets/base",
@@ -2569,7 +2568,8 @@
             "layout": "IPY_MODEL_8a61d045ffd44ac58f3f13eb10044836"
           }
         }
-      }
+      },
+      "state": {}
     }
   },
   "nbformat": 4,
