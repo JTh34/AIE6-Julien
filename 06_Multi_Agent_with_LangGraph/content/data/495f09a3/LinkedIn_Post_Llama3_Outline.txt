@@ -1,0 +1,6 @@
+1. Introduction to the breakthroughs in AI
+2. Significance of the paper on Llama-3’s context extension
+3. Details on the model's context length increase
+4. Impact on various evaluation tasks
+5. Authors' commitment to open resources
+6. Closing remarks and appreciation for the research team
