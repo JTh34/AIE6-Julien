@@ -1,0 +1,4 @@
+# Dossiers à ignorer lors des merges
+11_App_Challenge/puppycompanion-app/** merge=ours
+04_Production_RAG/DataRepository/** merge=ours
+.DS_Store merge=ours 
