@@ -1,0 +1,94 @@
+from dotenv import load_dotenv
+from openai import AsyncOpenAI, OpenAI
+import openai
+from typing import List, Optional
+import os
+import asyncio
+
+
+class EmbeddingModel:
+    def __init__(self, embeddings_model_name: str = "text-embedding-3-small", dimensions: Optional[int] = None):
+        load_dotenv()
+        self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.async_client = AsyncOpenAI()
+        self.client = OpenAI()
+        self.dimensions = dimensions
+
+        if self.openai_api_key is None:
+            raise ValueError(
+                "OPENAI_API_KEY environment variable is not set. Please set it to your OpenAI API key."
+            )
+        openai.api_key = self.openai_api_key
+        self.embeddings_model_name = embeddings_model_name
+        print(f"Using {self.embeddings_model_name} with {self.dimensions} dimensions")
+
+    async def async_get_embeddings(self, list_of_text: List[str]) -> List[List[float]]:
+        batch_size = 1024
+        batches = [list_of_text[i:i + batch_size] for i in range(0, len(list_of_text), batch_size)]
+        
+        async def process_batch(batch):
+            embedding_params = {
+                "input": batch, 
+                "model": self.embeddings_model_name
+            }
+            
+            if self.dimensions is not None:
+                embedding_params["dimensions"] = self.dimensions
+                
+            embedding_response = await self.async_client.embeddings.create(**embedding_params)
+            return [embeddings.embedding for embeddings in embedding_response.data]
+        
+        # Use asyncio.gather to process all batches concurrently
+        results = await asyncio.gather(*[process_batch(batch) for batch in batches])
+        
+        # Flatten the results
+        return [embedding for batch_result in results for embedding in batch_result]
+
+    async def async_get_embedding(self, text: str) -> List[float]:
+        embedding_params = {
+            "input": text, 
+            "model": self.embeddings_model_name
+        }
+        
+        if self.dimensions is not None:
+            embedding_params["dimensions"] = self.dimensions
+            
+        embedding = await self.async_client.embeddings.create(**embedding_params)
+
+        return embedding.data[0].embedding
+
+    def get_embeddings(self, list_of_text: List[str]) -> List[List[float]]:
+        embedding_params = {
+            "input": list_of_text, 
+            "model": self.embeddings_model_name
+        }
+        
+        if self.dimensions is not None:
+            embedding_params["dimensions"] = self.dimensions
+            
+        embedding_response = self.client.embeddings.create(**embedding_params)
+
+        return [embeddings.embedding for embeddings in embedding_response.data]
+
+    def get_embedding(self, text: str) -> List[float]:
+        embedding_params = {
+            "input": text, 
+            "model": self.embeddings_model_name
+        }
+        
+        if self.dimensions is not None:
+            embedding_params["dimensions"] = self.dimensions
+            
+        embedding = self.client.embeddings.create(**embedding_params)
+
+        return embedding.data[0].embedding
+
+
+if __name__ == "__main__":
+    embedding_model = EmbeddingModel(dimensions=256)
+    print(asyncio.run(embedding_model.async_get_embedding("Hello, world!")))
+    print(
+        asyncio.run(
+            embedding_model.async_get_embeddings(["Hello, world!", "Goodbye, world!"])
+        )
+    )
