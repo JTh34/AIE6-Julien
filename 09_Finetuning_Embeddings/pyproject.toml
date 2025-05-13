@@ -1,7 +1,7 @@
 [project]
 name = "09-finetuning-embeddings"
 version = "0.1.0"
-description = "Fine-tuning of embeddings for RAG"
+description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -23,16 +23,6 @@ dependencies = [
     "pymupdf>=1.25.3",
     "python-pptx==1.0.2",
     "sentence-transformers>=3.4.1",
-    "torch>=2.2.0",
-    "torchvision>=0.17.0",
-    "torchaudio>=2.2.0",
-    "transformers>=4.48.3",
+    "transformers[torch]>=4.48.3",
     "wandb>=0.19.6",
-    "nest-asyncio>=1.5.8",
-    "tqdm>=4.66.4",
-    "huggingface-hub>=0.26.0",
-    "ragas>=0.1.5",
-    "rapidfuzz",
-    "matplotlib",
-    "numpy"
 ]
